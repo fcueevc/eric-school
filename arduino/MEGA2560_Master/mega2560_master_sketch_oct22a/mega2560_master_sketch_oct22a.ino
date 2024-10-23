@@ -15,13 +15,13 @@
 #define gpioA_LED3    6
 
 // 第二題設定答案腳位&LED
-#define gpioB_Answer1 9
-#define gpioB_Answer2 11
-#define gpioB_Answer3 13
+#define gpioB_Answer1 54   // 9
+#define gpioB_Answer2 56   // 11
+#define gpioB_Answer3 58   // 13
 
-#define gpioB_LED1    8
-#define gpioB_LED2    10
-#define gpioB_LED3    12
+#define gpioB_LED1    55   // 8
+#define gpioB_LED2    57   // 10
+#define gpioB_LED3    59   // 12
 
 // 第三題設定答案腳位&LED
 #define gpioC_Answer1 15
@@ -53,7 +53,6 @@
 // 設定腳位&LED
 #define gpio_set      32
 #define gpio_set_LED  33
-#define gpio_reset    34
 
 // 按鍵偵測時間
 const int detectDelay   = 200;     
@@ -106,7 +105,6 @@ void setup() {
   pinMode(gpioE_Answer3, INPUT_PULLUP);
 
   pinMode(gpio_set, INPUT_PULLUP);
-  pinMode(gpio_reset, INPUT_PULLUP);
 
   // 設定燈號, 預設皆為OFF
   pinMode(gpioA_LED1, OUTPUT);
@@ -151,8 +149,6 @@ void setup() {
 
   pinMode(gpio_set_LED, OUTPUT);  
   digitalWrite(gpio_set_LED, LED_OFF);
-
-  Serial.println("Test");
 
 }
 
@@ -235,7 +231,6 @@ void loop() {
      while(digitalRead(gpioA_Answer3)==GPIO_PRESS);
   }
   
-  /*
   // 讀取第二題按鍵
   if((digitalRead(gpioB_Answer1)==GPIO_PRESS)&&(led_B!=1)&&(setStatus==0))
   {
@@ -246,9 +241,11 @@ void loop() {
      digitalWrite(gpioB_LED2, LED_OFF);
      digitalWrite(gpioB_LED3, LED_OFF);
 
+     delay(50);
      while(digitalRead(gpioB_Answer1)==GPIO_PRESS);
   }
-   else if((digitalRead(gpioB_Answer2)==GPIO_PRESS)&&(led_B!=2)&&(setStatus==0))
+  
+  if((digitalRead(gpioB_Answer2)==GPIO_PRESS)&&(led_B!=2)&&(setStatus==0))
   {
      led_B = 2;
      answerBuf[1] = 2;
@@ -257,9 +254,11 @@ void loop() {
      digitalWrite(gpioB_LED2, LED_ON);
      digitalWrite(gpioB_LED3, LED_OFF);
 
+     delay(50);
      while(digitalRead(gpioB_Answer2)==GPIO_PRESS);
   }
-   else if((digitalRead(gpioB_Answer3)==GPIO_PRESS)&&(led_B!=3)&&(setStatus==0))
+  
+  if((digitalRead(gpioB_Answer3)==GPIO_PRESS)&&(led_B!=3)&&(setStatus==0))
   {
      led_B = 3;
      answerBuf[1] = 3;
@@ -268,9 +267,10 @@ void loop() {
      digitalWrite(gpioB_LED2, LED_OFF);
      digitalWrite(gpioB_LED3, LED_ON);
 
+     delay(50);
      while(digitalRead(gpioB_Answer3)==GPIO_PRESS);
   }
-*/
+
   // 讀取第三題按鍵
   if((digitalRead(gpioC_Answer1)==GPIO_PRESS)&&(led_C!=1)&&(setStatus==0))
   {
@@ -401,34 +401,9 @@ void loop() {
 
       setStatus = 1;
       Serial.println("Lock");
+      digitalWrite(gpio_set_LED, LED_ON);     
 
-      //複查答案內容, 應不可等於0
-      for(i=0;i<5;i++)
-      {
-        if(answer[i]==0)
-          setStatus = 0;
-      }
-
-      if(setStatus==1)
-      {
-        digitalWrite(gpio_set_LED, LED_ON);    // 答案全部設定,SET LED ON
-      } 
-      else                                     // 答案未全部設定,SET LED 閃爍
-      {
-        digitalWrite(gpio_set_LED, LED_ON);
-        delay(500);
-        digitalWrite(gpio_set_LED, LED_OFF);
-        delay(500);
-        digitalWrite(gpio_set_LED, LED_ON);
-        delay(500);
-        digitalWrite(gpio_set_LED, LED_OFF);
-        delay(500);
-        digitalWrite(gpio_set_LED, LED_ON);
-        delay(500);
-        digitalWrite(gpio_set_LED, LED_OFF);          
-      }
-
-      delay(100);
+      delay(500);
       while(digitalRead(gpio_set)==GPIO_PRESS);
    }
    else if((digitalRead(gpio_set)==GPIO_PRESS)&&(setStatus==1))   // 清除狀態, 重設答案
@@ -473,8 +448,34 @@ void loop() {
       setStatus = 0;
       Serial.print(strRESET);   
 
-      delay(100);
+      delay(500);
       while(digitalRead(gpio_set)==GPIO_PRESS);
   }
+  else if((digitalRead(gpio_set)==GPIO_PRESS)&&(setStatus==0)&&((led_A==0)||(led_B==0)||(led_C==0)||(led_D==0)||(led_E==0)))
+  {
+    Serial.println("Set Button");
+
+    //複查答案內容, 應不可等於0
+    for(i=0;i<5;i++)
+    {
+      Serial.println(answerBuf[i]);   
+    }
+        
+    digitalWrite(gpio_set_LED, LED_ON);
+    delay(500);
+    digitalWrite(gpio_set_LED, LED_OFF);
+    delay(500);
+    digitalWrite(gpio_set_LED, LED_ON);
+    delay(500);
+    digitalWrite(gpio_set_LED, LED_OFF);
+    delay(500);
+    digitalWrite(gpio_set_LED, LED_ON);
+    delay(500);
+    digitalWrite(gpio_set_LED, LED_OFF);          
+     
+  }
+
+  delay(100);
+  while(digitalRead(gpio_set)==GPIO_PRESS);
   
 }
