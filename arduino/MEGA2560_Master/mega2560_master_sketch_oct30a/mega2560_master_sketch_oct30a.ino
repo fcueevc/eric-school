@@ -83,11 +83,13 @@ byte led_E =0;
 int buttonState = 0;  // variable for reading the pushbutton status
 
 // 答案
-byte answerBuf[5] = {0,0,0,0,0};   
+byte answerBuf[5] = {1,1,2,1,3};   
 byte answer[5];        
 String strRESET = "AT+RESET\r";
 String strOK = "OK+(";
+String strRQA = "AT+RQA(";
 String strTemp = "";
+String strAns = "";
 String strEND = ")\r\n";
 String strERROR = "ERROR+(";
 
@@ -160,6 +162,9 @@ void setup() {
 
   pinMode(gpio_set_LED, OUTPUT);  
   digitalWrite(gpio_set_LED, LED_OFF);
+  
+  // Only for debug
+  //Serial.println("TEST");  
 
 }
 
@@ -177,29 +182,135 @@ void loop() {
       teststr.trim();
  
       // 比對答案
-      if(teststr=="AT+RQA(1)")
+      if((teststr==("AT+RQA(1,1)"))||(teststr==("AT+RQA(1,2)"))||(teststr==("AT+RQA(1,3)")))
       {
+        // 設定Response
         strTemp = strOK + "1," + answerBuf[0] + strEND;
-      }
-      else if (teststr=="AT+RQA(2)")
-      {
-        strTemp = strOK + "2," + answerBuf[1] + strEND;
-      }
-      else if (teststr=="AT+RQA(3)")
-      {
-        strTemp = strOK + "3," + answerBuf[2] + strEND;
-      }
-      else if (teststr=="AT+RQA(4)")
-      {
-        strTemp = strOK + "4," + answerBuf[3] + strEND;
-      }
-      else if (teststr=="AT+RQA(5)")
-      {
-        strTemp = strOK + "5," + answerBuf[4] + strEND;
-      }
+        strAns = strRQA + "1," + answerBuf[0] +")";
+        
+        // 比對答案
+        if(teststr==strAns)
+        {
+          //Serial.println("Correct");
+          answerConfirm[0] = 1;    // 答案正確
+        }
+        else
+        {
+          //Serial.println("Wrong");
+          answerConfirm[0] = 2;    // 答案錯誤
+        }
 
+        strAns ="";  // 清空Buffer
+      }
+      else if ((teststr==("AT+RQA(2,1)"))||(teststr==("AT+RQA(2,2)"))||(teststr==("AT+RQA(2,3)")))
+      {
+        // 設定Response
+        strTemp = strOK + "2," + answerBuf[1] + strEND;
+        strAns = strRQA + "2," + answerBuf[1] +")";
+
+        // 比對答案
+        if(teststr==strAns)
+        {
+          //Serial.println("Correct");
+          answerConfirm[1] = 1;    // 答案正確
+        }
+        else
+        {
+          //Serial.println("Wrong");
+          answerConfirm[1] = 2;    // 答案錯誤
+        }
+
+        strAns ="";  // 清空Buffer
+      }
+      else if ((teststr==("AT+RQA(3,1)"))||(teststr==("AT+RQA(3,2)"))||(teststr==("AT+RQA(3,3)")))
+      {
+        // 設定Response
+        strTemp = strOK + "3," + answerBuf[2] + strEND;
+        strAns = strRQA + "3," + answerBuf[2] +")";
+
+        // 比對答案
+        if(teststr==strAns)
+        {
+          //Serial.println("Correct");
+          answerConfirm[2] = 1;    // 答案正確
+        }
+        else
+        {
+          //Serial.println("Wrong");
+          answerConfirm[2] = 2;    // 答案錯誤
+        }
+
+        strAns ="";  // 清空Buffer
+      }
+      else if ((teststr==("AT+RQA(4,1)"))||(teststr==("AT+RQA(4,2)"))||(teststr==("AT+RQA(4,3)")))
+      {
+        // 設定Response
+        strTemp = strOK + "4," + answerBuf[3] + strEND;
+        strAns = strRQA + "4," + answerBuf[3] +")";
+
+        // 比對答案
+        if(teststr==strAns)
+        {
+          //Serial.println("Correct");
+          answerConfirm[3] = 1;    // 答案正確
+        }
+        else
+        {
+          //Serial.println("Wrong");
+          answerConfirm[3] = 2;    // 答案錯誤
+        }
+
+        strAns ="";  // 清空Buffer
+      }
+      else if ((teststr==("AT+RQA(5,1)"))||(teststr==("AT+RQA(5,2)"))||(teststr==("AT+RQA(5,3)")))
+      {
+        // 設定Response
+        strTemp = strOK + "5," + answerBuf[4] + strEND;
+        strAns = strRQA + "5," + answerBuf[4] +")";
+
+        // 比對答案
+        if(teststr==strAns)
+        {
+          //Serial.println("Correct");
+          answerConfirm[4] = 1;    // 答案正確
+        }
+        else
+        {
+          //Serial.println("Wrong");
+          answerConfirm[4] = 2;    // 答案錯誤
+        }
+
+        strAns ="";  // 清空Buffer
+      }
+      
+      // Response
       Serial.print(strTemp);  
+      
+      // Only for debug
+      //for(i=0;i<5;i++)
+      //{
+        //Serial.println(answerConfirm[i]);
+     // } 
+
+      if((answerConfirm[0]==0)||((answerConfirm[1])==0)||((answerConfirm[2])==0)||((answerConfirm[3])==0)||((answerConfirm[4])==0))   // 等待作答
+      {
+        //Serial.println("Wait for Answer");
+        // Do nothing
+      }
+      else if((answerConfirm[0]==1)&&((answerConfirm[1])==1)&&((answerConfirm[2])==1)&&((answerConfirm[3])==1)&&((answerConfirm[4])==1))  // 答案全對
+      {
+        //Serial.println("All Pass!!");
+
+        // 要設定正確音效腳(這邊還沒設)
+      }
+      else if((answerConfirm[0]==2)||((answerConfirm[1])==2)||((answerConfirm[2])==2)||((answerConfirm[3])==2)||((answerConfirm[4])==2))  // 任一答案錯誤
+      {
+        //Serial.println("Some errors!");
+
+        // 要設定錯誤音效腳(這邊還沒設)
+      }
   }
+
 
   buttonState = digitalRead(gpioA_Answer1);
   // 讀取第一題按鍵
@@ -427,6 +538,7 @@ void loop() {
       {
         answerBuf[i] = 0;
         answer[i] = 0;
+        answerConfirm[i] = 0;
       }
 
       led_A = 0;
@@ -488,5 +600,7 @@ void loop() {
 
   delay(100);
   while(digitalRead(gpio_set)==GPIO_PRESS);
+
+  //Serial.println("TEST1"); 
   
 }
